@@ -68,19 +68,13 @@ class BeeWarePlugin(Plugin):
                    '--', filepath)
             stdout, stderr = execute(cmd)
 
-            commits = []
-            if stdout:
-                commits = [c for c in stdout.split('\n') if c]
-
-            return commits
+            return [c for c in stdout.split('\n') if c] if stdout else []
 
         def git_diff(filepath, since):
             """Get git diff for a given `filepath` `since` a given date."""
             html_diff = None
-            commits = git_commits(filepath, since)
-            if commits:
-                cmd = ('git', '--no-pager', 'diff', commits[-1]+'^', '--',
-                       filepath)
+            if commits := git_commits(filepath, since):
+                cmd = 'git', '--no-pager', 'diff', f'{commits[-1]}^', '--', filepath
                 stdout, stderr = execute(cmd)
 
                 if stdout:
@@ -121,13 +115,13 @@ class BeeWarePlugin(Plugin):
         # ---------------------------------------------------------------------
         def get_pygments_css_styles(style='default'):
             """Get pygments CSS."""
-            class_name = '.highlight'
             css = None
             if style in get_all_styles():
+                class_name = '.highlight'
                 cmd = ('pygmentize', '-S', style, '-f', 'html', '-a',
                        class_name)
                 stdout, stderr = execute(cmd)
-                css = '<style>{}</style>'.format(stdout)
+                css = f'<style>{stdout}</style>'
 
             return css
 

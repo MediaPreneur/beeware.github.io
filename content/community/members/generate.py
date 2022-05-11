@@ -15,7 +15,7 @@ def generate(filename, basedir):
             email = line[4]
             join_date = line[6]
 
-            uid = hashlib.sha1(email.encode()).hexdigest()[0:8]
+            uid = hashlib.sha1(email.encode()).hexdigest()[:8]
 
             if not got_header:
                 if name != 'Buyer Name':
@@ -36,11 +36,11 @@ def generate(filename, basedir):
             }.get(line[1], 'other')
 
             if level != "professional":
-                email = "%s@******.com" % email.split("@")[0]
+                email = f'{email.split("@")[0]}@******.com'
 
             outdir = os.path.join(basedir, uid)
             if os.path.exists(outdir):
-                print("User %s already exists" % uid)
+                print(f"User {uid} already exists")
             else:
                 os.mkdir(outdir)
                 with open(os.path.join(outdir, 'contents.lr'), 'w') as outfile:
@@ -56,7 +56,7 @@ def generate(filename, basedir):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print("Usage: %s <data.csv> <output directory>" % sys.argv[0])
+        print(f"Usage: {sys.argv[0]} <data.csv> <output directory>")
         sys.exit(1)
 
     generate(sys.argv[1], sys.argv[2])
